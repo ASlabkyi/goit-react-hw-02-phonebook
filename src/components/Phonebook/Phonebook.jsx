@@ -1,17 +1,30 @@
 import { Component } from 'react';
-import { nanoid } from 'nanoid';
+
+import { Filter } from './Filter/Filter';
+import { ContactList } from './ContactList/ContactList';
+import { ContactForm } from './ContactForm/ContactForm';
+import { Container } from './Phonebook.styled';
 
 export class Phonebook extends Component {
   state = {
     contacts: [],
     filter: '',
-    name: '',
-    number: '',
   };
 
-  handleChange = e => {
-    const { name, value } = e.target;
-    this.setState({ [name]: value });
+  handleAddContact = newContact => {
+    const { contacts } = this.state;
+
+    const isDuplicate = contacts.some(
+      contact => contact.name === newContact.name
+    );
+    if (isDuplicate) {
+      alert(`${newContact.name} is already in contacts`);
+      return;
+    }
+
+    this.setState(prev => ({
+      contacts: [...prev.contacts, newContact],
+    }));
   };
 
   handleFilterChange = e => {
@@ -20,75 +33,33 @@ export class Phonebook extends Component {
     this.setState({ filter: value });
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const { contacts, name, number } = this.state;
-    const id = nanoid();
-    const newContact = { id, name, number };
-    this.setState({
-      contacts: [...contacts, newContact],
-      name: '',
-      number: '',
-    });
-  };
+  deleteContact = id =>
+    this.setState(prev => ({
+      contacts: prev.contacts.filter(contact => contact.id !== id),
+    }));
 
   render() {
-    const { contacts, name, number, filter } = this.state;
+    const { contacts, filter } = this.state;
     return (
-      <>
+      <Container>
         <h1>Phone Book</h1>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Name:
-            <input
-              type="text"
-              name="name"
-              value={name}
-              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              required
-              onChange={this.handleChange}
-            />
-          </label>
-          <label>
-            Number:
-            <input
-              type="tel"
-              name="number"
-              value={number}
-              pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-              title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-              required
-              onChange={this.handleChange}
-            />
-          </label>
-          <button type="submit">Add Contact</button>
-        </form>
+
+        <ContactForm addContact={this.handleAddContact}></ContactForm>
+
         <h2>Contacts:</h2>
 
-        <label>
-          FInd contacts by name
-          <input
-            type="tel"
-            name="filter"
-            value={filter}
-            placeholder="Type to search ..."
-            onChange={this.handleFilterChange}
-          />
-        </label>
+        <Filter
+          children="Find contacts by name"
+          filter={filter}
+          handleFilterChange={this.handleFilterChange}
+        ></Filter>
 
-        <ul>
-          {contacts
-            .filter(({ name }) =>
-              name.toLowerCase().includes(filter.toLowerCase())
-            )
-            .map(({ id, name, number }) => (
-              <li key={id}>
-                {name}: {number}
-              </li>
-            ))}
-        </ul>
-      </>
+        <ContactList
+          contacts={contacts}
+          filter={filter}
+          onDeleteContact={this.deleteContact}
+        ></ContactList>
+      </Container>
     );
   }
 }
