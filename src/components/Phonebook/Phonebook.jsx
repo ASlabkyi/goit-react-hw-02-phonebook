@@ -49,7 +49,6 @@ export class Phonebook extends Component {
         <h2>Contacts:</h2>
 
         <Filter
-          children="Find contacts by name"
           filter={filter}
           handleFilterChange={this.handleFilterChange}
         ></Filter>

@@ -30,4 +30,5 @@ ContactList.propTypes = {
     })
   ),
   filter: PropTypes.string.isRequired,
+  onDeleteContact: PropTypes.func.isRequired,
 };

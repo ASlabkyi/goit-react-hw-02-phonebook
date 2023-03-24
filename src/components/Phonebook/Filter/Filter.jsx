@@ -1,9 +1,11 @@
+import PropTypes from 'prop-types';
+
 import { Input, Label } from './Filter.styled';
 
-export const Filter = ({ children, filter, handleFilterChange }) => {
+export const Filter = ({ filter, handleFilterChange }) => {
   return (
     <Label>
-      {children}
+      <p>Find contacts by name</p>
       <Input
         type="tel"
         name="filter"
@@ -13,4 +15,9 @@ export const Filter = ({ children, filter, handleFilterChange }) => {
       />
     </Label>
   );
+};
+
+Filter.propTypes = {
+  filter: PropTypes.string.isRequired,
+  handleFilterChange: PropTypes.func.isRequired,
 };
